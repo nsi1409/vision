@@ -1362,10 +1362,10 @@ class RandomRotation(torch.nn.Module):
                 fill = [float(f) for f in fill]
         angle = self.get_params(self.degrees)
 
-		if(angle_tuple):	
-			return F.rotate(img, angle, self.resample, self.expand, self.center, fill), angle
-		else:
-			return F.rotate(img, angle, self.resample, self.expand, self.center, fill)
+        if(angle_tuple):	
+            return F.rotate(img, angle, self.resample, self.expand, self.center, fill), angle
+        else:
+            return F.rotate(img, angle, self.resample, self.expand, self.center, fill)
 
     def __repr__(self) -> str:
         interpolate_str = self.interpolation.value
