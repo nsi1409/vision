@@ -6,6 +6,7 @@ class InputTensor(torch.Tensor):
 		torch.Tensor.__init__(*args, **kwargs)
 
 class LabelTensor(torch.Tensor):
-	pass
+	def __init__(self, *args, **kwargs):
+		torch.Tensor.__init__(*args, **kwargs)
 
 
