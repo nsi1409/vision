@@ -1289,7 +1289,7 @@ class RandomRotation(torch.nn.Module):
     """
 
     def __init__(
-        self, degrees, interpolation=InterpolationMode.NEAREST, expand=False, center=None, fill=0, resample=None, angle_tuple=False
+        self, degrees, interpolation=InterpolationMode.NEAREST, expand=False, center=None, fill=0, resample=None
     ):
         super().__init__()
         _log_api_usage_once(self)
@@ -1324,7 +1324,6 @@ class RandomRotation(torch.nn.Module):
             raise TypeError("Fill should be either a sequence or a number.")
 
         self.fill = fill
-        self.angle_tuple = angle_tuple
 
     @staticmethod
     def get_params(degrees: List[float]) -> float:
@@ -1353,10 +1352,7 @@ class RandomRotation(torch.nn.Module):
                 fill = [float(f) for f in fill]
         angle = self.get_params(self.degrees)
 
-        if(self.angle_tuple):
-            return F.rotate(img, angle, self.resample, self.expand, self.center, fill), angle
-        else:
-            return F.rotate(img, angle, self.resample, self.expand, self.center, fill)
+        return F.rotate(img, angle, self.resample, self.expand, self.center, fill)
 
     def __repr__(self) -> str:
         interpolate_str = self.interpolation.value
