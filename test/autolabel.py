@@ -10,7 +10,9 @@ random_rotation = transforms.RandomRotation(degrees=360)
 img = Image.open('assets/encode_jpeg/grace_hopper_517x606.jpg')
 
 img = convert_tensor(img)
-img = al.LabelTensor(img)
+_ = random_rotation(img)
+img = al.InputTensor(img)
+print(f'transformation manifest: {img.transformation_manifest}')
 img = random_rotation(img)
 
 plt.imshow(img.permute(1, 2, 0))
