@@ -8,8 +8,6 @@ from typing import Tuple, List, Optional
 import torch
 from torch import Tensor
 
-from .. import autolabel as al
-
 try:
     import accimage
 except ImportError:
@@ -1353,11 +1351,8 @@ class RandomRotation(torch.nn.Module):
             else:
                 fill = [float(f) for f in fill]
         angle = self.get_params(self.degrees)
-        outp = F.rotate(img, angle, self.resample, self.expand, self.center, fill)
-        if isinstance(outp, al.InputTensor):
-            print('is input tensor = true')
-            #outp.transformation_manifest.append(['rotation', angle])
-        return outp
+
+        return F.rotate(img, angle, self.resample, self.expand, self.center, fill)
 
     def __repr__(self) -> str:
         interpolate_str = self.interpolation.value
