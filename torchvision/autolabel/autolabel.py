@@ -13,19 +13,18 @@ class ImageTensor(torch.Tensor):
 	def append_transform(self, transform):
 		self.transformation_manifest.append(transform)
 
-	def frompath(self, path):
-		img = Image.open(path)
-		convert = transforms.ToTensor()
-		img = convert(img)
-		img = ImageTensor(img)
-		img.transformation_manifest = []
-		self = img
-
 	def plot(self, label=None):
 		plt.imshow(self.permute(1, 2, 0))
 		if label:
 			pass #TODO implement keypoint plot
 		plt.show()
+
+def frompath(path):
+	img = Image.open(path)
+	convert = transforms.ToTensor()
+	img = convert(img)
+	img = ImageTensor(img)
+	return img
 
 
 class MetaLabelClass:
