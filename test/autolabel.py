@@ -13,7 +13,7 @@ img = Image.open('assets/encode_jpeg/grace_hopper_517x606.jpg')
 
 label = al.LabelTensor([[226, 192], [310, 189]])
 label.metalabel([[al.X(0), al.Y(0)], [al.X(1), al.Y(1)]])
-print(label.internal_label)
+print(label.internal_label[0])
 
 img = convert_tensor(img)
 img = al.InputTensor(img)

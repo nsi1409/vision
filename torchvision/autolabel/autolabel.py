@@ -26,7 +26,7 @@ class MetaLabelClass:
 		self.cl = meta.cl
 
 	def __str__(self):
-		return "index: " + self.index + " x: " + self.x + " y: " + self.y + " classifier: " + self.cl
+		return "index: " + str(self.index) + " x: " + str(self.x) + " y: " + str(self.y) + " classifier: " + str(self.cl)
 
 class X(MetaLabelClass):
 	def add_to_meta(self, meta, value):
