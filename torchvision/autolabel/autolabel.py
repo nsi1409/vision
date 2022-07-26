@@ -1,6 +1,8 @@
 import torch
 from .. import transforms
 import math
+from matplotlib import pyplot as plt
+from PIL import Image
 
 
 class ImageTensor(torch.Tensor):
@@ -10,6 +12,20 @@ class ImageTensor(torch.Tensor):
 
 	def append_transform(self, transform):
 		self.transformation_manifest.append(transform)
+
+	def frompath(self, path):
+		img = Image.open(path)
+		convert = transforms.ToTensor()
+		img = convert(img)
+		img = ImageTensor(img)
+		img.transformation_manifest = []
+		self = img
+
+	def plot(self, label=None):
+		plt.imshow(self.permute(1, 2, 0))
+		if label:
+			pass #TODO implement keypoint plot
+		plt.show()
 
 
 class MetaLabelClass:
