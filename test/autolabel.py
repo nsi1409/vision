@@ -13,17 +13,16 @@ img = Image.open('assets/encode_jpeg/grace_hopper_517x606.jpg')
 
 label = al.LabelTensor([[226, 192], [310, 189]])
 label.metalabel([[al.X(0), al.Y(0)], [al.X(1), al.Y(1)]])
-print(label.internal_label[0])
+print(label.meta_tensor[0][0])
 
 img = convert_tensor(img)
-img = al.InputTensor(img)
+img = al.ImageTensor(img)
 #print(f'transformation manifest: {img.transformation_manifest}')
 #print(f'input type: {type(img)}')
 #pdb.set_trace()
 #img = random_rotation(img)
 img = al_rot(img)
 img = al_rot(img)
-print(f'output type: {type(img)}')
 
 print(f'transformation manifest: {img.transformation_manifest}')
 

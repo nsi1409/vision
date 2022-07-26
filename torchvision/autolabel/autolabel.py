@@ -3,7 +3,7 @@ from .. import transforms
 import math
 
 
-class InputTensor(torch.Tensor):
+class ImageTensor(torch.Tensor):
 	def __init__(self, *args, **kwargs):
 		self.transformation_manifest = []
 		torch.Tensor.__init__(*args, **kwargs)
@@ -44,15 +44,15 @@ class Cl(MetaLabelClass):
 class LabelTensor(torch.Tensor):
 	def __init__(self, *args, **kwargs):
 		self.internal_label = {}
+		self.meta_tensor = []
 		torch.Tensor.__init__(*args, **kwargs)
 
 	def add_to_internal_dictionary(self, current, clone):
 		if not current.index in self.internal_label:
 			self.internal_label[current.index] = MetaLabelClass(current.index)
-			current.add_to_meta(self.internal_label[current.index], clone)
+			current.add_to_meta(self.internal_label[current.index], clone.item())
 		else:
-			current.add_to_meta(self.internal_label[current.index], clone)
-			
+			current.add_to_meta(self.internal_label[current.index], clone.item())
 
 	def recursive_meta_helper(self, current, clone):
 		if not isinstance(current, list):
@@ -61,12 +61,18 @@ class LabelTensor(torch.Tensor):
 			for i in range(len(current)):
 				self.recursive_meta_helper(current[i], clone[i])
 
-	def recursive_extractor(self):
-		pass
+	def recursive_extractor(self, current):
+		if not isinstance(current, list):
+			current.extract_from_meta(self.internal_label[current.index])
+		else:
+			for i in range(len(current)):
+				self.recursive_extractor(current[i])
 
 	def metalabel(self, internal_label):
+		self.meta_tensor = internal_label
 		clone = self.data.clone()
 		self.recursive_meta_helper(internal_label, clone)
+		self.recursive_extractor(self.meta_tensor)
 
 
 class RandomRotation(transforms.RandomRotation):
@@ -76,7 +82,7 @@ class RandomRotation(transforms.RandomRotation):
 	def forward(self, img):
 		transformations = img.transformation_manifest
 		tensor = transforms.RandomRotation.forward(self, img)
-		input_tensor = InputTensor(tensor)
+		input_tensor = ImageTensor(tensor)
 		input_tensor.transformation_manifest = transformations
 		input_tensor.transformation_manifest.append(['rotation', (math.pi * self.get_params(self.degrees)) / 180])
 		return input_tensor
