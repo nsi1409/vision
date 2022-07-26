@@ -17,6 +17,6 @@ img = al_rot(img)
 
 print(f'transformation manifest: {img.transformation_manifest}')
 
-img.plot()
+img.plot(label=label)
 
 

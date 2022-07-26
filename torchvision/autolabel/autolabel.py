@@ -15,8 +15,10 @@ class ImageTensor(torch.Tensor):
 
 	def plot(self, label=None):
 		plt.imshow(self.permute(1, 2, 0))
-		if label:
-			pass #TODO implement keypoint plot
+		if label is not None:
+			for index, point in label.internal_label.items():
+				plt.scatter(x=[point.x], y=[point.y], c='r', s=7)
+				plt.text(point.x+2, point.y-2, str(index), c='r', fontsize=9)
 		plt.show()
 
 def frompath(path):
