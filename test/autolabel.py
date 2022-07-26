@@ -12,7 +12,8 @@ al_rot = al.RandomRotation(degrees=180)
 img = Image.open('assets/encode_jpeg/grace_hopper_517x606.jpg')
 
 label = al.LabelTensor([[226, 192], [310, 189]])
-label.meta_label([[al.X(0), al.Y(0)], [al.X(1), al.Y(1)]])
+label.metalabel([[al.X(0), al.Y(0)], [al.X(1), al.Y(1)]])
+print(label.internal_label)
 
 img = convert_tensor(img)
 img = al.InputTensor(img)

@@ -12,24 +12,61 @@ class InputTensor(torch.Tensor):
 		self.transformation_manifest.append(transform)
 
 
-class MetaLabel:
+class MetaLabelClass:
 	def __init__(self, index):
 		self.index = index
+		self.x = None
+		self.y = None
+		self.cl = None
 
-class X(MetaLabel):
-	pass
+	def extract_from_meta(self, meta):
+		self.index = meta.index
+		self.x = meta.x
+		self.y = meta.y
+		self.cl = meta.cl
 
-class Y(MetaLabel):
-	pass
+	def __str__(self):
+		return "index: " + self.index + " x: " + self.x + " y: " + self.y + " classifier: " + self.cl
+
+class X(MetaLabelClass):
+	def add_to_meta(self, meta, value):
+		meta.x = value
+
+class Y(MetaLabelClass):
+	def add_to_meta(self, meta, value):
+		meta.y = value
+
+class Cl(MetaLabelClass):
+	def add_to_meta(self, meta, value):
+		meta.cl = value
 
 
 class LabelTensor(torch.Tensor):
 	def __init__(self, *args, **kwargs):
-		self.internal_label = []
+		self.internal_label = {}
 		torch.Tensor.__init__(*args, **kwargs)
 
-	def meta_label(self, internal_label):
-		self.internal_label = internal_label
+	def add_to_internal_dictionary(self, current, clone):
+		if not current.index in self.internal_label:
+			self.internal_label[current.index] = MetaLabelClass(current.index)
+			current.add_to_meta(self.internal_label[current.index], clone)
+		else:
+			current.add_to_meta(self.internal_label[current.index], clone)
+			
+
+	def recursive_meta_helper(self, current, clone):
+		if not isinstance(current, list):
+			self.add_to_internal_dictionary(current, clone)
+		else:
+			for i in range(len(current)):
+				self.recursive_meta_helper(current[i], clone[i])
+
+	def recursive_extractor(self):
+		pass
+
+	def metalabel(self, internal_label):
+		clone = self.data.clone()
+		self.recursive_meta_helper(internal_label, clone)
 
 
 class RandomRotation(transforms.RandomRotation):
