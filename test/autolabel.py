@@ -13,8 +13,11 @@ print(label.meta_tensor[0][0])
 
 img = al.frompath(path)
 img = al_rot(img)
-img = al_rot(img)
+#img = al_rot(img)
 
+print(f'transformation manifest: {img.transformation_manifest}')
+
+label.mutate(img)
 print(f'transformation manifest: {img.transformation_manifest}')
 
 img.plot(label=label)

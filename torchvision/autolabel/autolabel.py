@@ -49,13 +49,33 @@ class X(MetaLabelClass):
 	def add_to_meta(self, meta, value):
 		meta.x = value
 
+	def add_self_to_meta(self, meta):
+		meta.x = self.x
+
+	def mutate(self, trans):
+		if trans[0] == 'rotation':
+			self.x = (self.x * math.cos(trans[1])) - (self.y * math.sin(trans[1]))
+
 class Y(MetaLabelClass):
 	def add_to_meta(self, meta, value):
 		meta.y = value
 
+	def add_self_to_meta(self, meta):
+		meta.y = self.y
+
+	def mutate(self, trans):
+		if trans[0] == 'rotation':
+			self.y = (self.x * math.sin(trans[1])) + (self.y * math.cos(trans[1]))
+
 class Cl(MetaLabelClass):
 	def add_to_meta(self, meta, value):
 		meta.cl = value
+
+	def add_self_to_meta(self, meta):
+		meta.cl = self.cl
+
+	def mutate(self, trans):
+		pass
 
 
 class LabelTensor(torch.Tensor):
@@ -90,6 +110,21 @@ class LabelTensor(torch.Tensor):
 		clone = self.data.clone()
 		self.recursive_meta_helper(internal_label, clone)
 		self.recursive_extractor(self.meta_tensor)
+
+	def recursive_mutator(self, current, trans):
+		if not isinstance(current, list):
+			current.mutate(trans)
+			current.add_self_to_meta(self.internal_label[current.index])	
+		else:
+			for i in range(len(current)):
+				self.recursive_mutator(current[i], trans)
+
+	def mutate(self, img, erase=True):
+		for i in range(len(img.transformation_manifest)):
+			self.recursive_mutator(self.meta_tensor, img.transformation_manifest[i])
+			self.recursive_extractor(self.meta_tensor)
+		if (erase == True):
+			img.transformation_manifest = []
 
 
 class RandomRotation(transforms.RandomRotation):
