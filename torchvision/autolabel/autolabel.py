@@ -82,6 +82,8 @@ class LabelTensor(torch.Tensor):
 	def __init__(self, *args, **kwargs):
 		self.internal_label = {}
 		self.meta_tensor = []
+		self.x_scale = None
+		self.y_scale = None
 		torch.Tensor.__init__(*args, **kwargs)
 
 	def add_to_internal_dictionary(self, current, clone):
@@ -125,6 +127,21 @@ class LabelTensor(torch.Tensor):
 			self.recursive_extractor(self.meta_tensor)
 		if (erase == True):
 			img.transformation_manifest = []
+
+	def scale(self, img):
+		dim = list(img.size())
+		self.x_scale = dim[2]
+		self.y_scale = dim[1]
+		for index, point in self.internal_label.items():
+			point.x = (point.x / (self.x_scale-1)) - 0.5
+			point.y = (point.y / (self.y_scale-1)) - 0.5
+		self.recursive_extractor(self.meta_tensor)
+
+	def unscale(self):
+		for index, point in self.internal_label.items():
+			point.x = (point.x + 0.5) * (self.x_scale-1)
+			point.y = (point.y + 0.5) * (self.y_scale-1)
+		self.recursive_extractor(self.meta_tensor)
 
 
 class RandomRotation(transforms.RandomRotation):
