@@ -1324,6 +1324,7 @@ class RandomRotation(torch.nn.Module):
             raise TypeError("Fill should be either a sequence or a number.")
 
         self.fill = fill
+        self.angle = None
 
     @staticmethod
     def get_params(degrees: List[float]) -> float:
@@ -1351,6 +1352,7 @@ class RandomRotation(torch.nn.Module):
             else:
                 fill = [float(f) for f in fill]
         angle = self.get_params(self.degrees)
+        self.angle = angle
 
         return F.rotate(img, angle, self.resample, self.expand, self.center, fill)
 

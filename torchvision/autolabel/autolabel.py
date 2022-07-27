@@ -153,7 +153,7 @@ class RandomRotation(transforms.RandomRotation):
 		tensor = transforms.RandomRotation.forward(self, img)
 		input_tensor = ImageTensor(tensor)
 		input_tensor.transformation_manifest = transformations
-		input_tensor.transformation_manifest.append(['rotation', math.radians(self.get_params(self.degrees))])
+		input_tensor.transformation_manifest.append(['rotation', -1 * math.radians(self.angle)])
 		return input_tensor
 
 
