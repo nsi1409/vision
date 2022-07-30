@@ -56,6 +56,9 @@ class X(MetaLabelClass):
 		if trans[0] == 'rotation':
 			self.x = (self.x * math.cos(trans[1])) - (self.y * math.sin(trans[1]))
 
+	def pull(self):
+		return self.x
+
 class Y(MetaLabelClass):
 	def add_to_meta(self, meta, value):
 		meta.y = value
@@ -67,6 +70,9 @@ class Y(MetaLabelClass):
 		if trans[0] == 'rotation':
 			self.y = (self.x * math.sin(trans[1])) + (self.y * math.cos(trans[1]))
 
+	def pull(self):
+		return self.y
+
 class Cl(MetaLabelClass):
 	def add_to_meta(self, meta, value):
 		meta.cl = value
@@ -77,11 +83,15 @@ class Cl(MetaLabelClass):
 	def mutate(self, trans):
 		pass
 
+	def pull(self):
+		return self.cl
+
 
 class LabelTensor(torch.Tensor):
 	def __init__(self, *args, **kwargs):
 		self.internal_label = {}
 		self.meta_tensor = []
+		self.init_tensor = []
 		self.x_scale = None
 		self.y_scale = None
 		torch.Tensor.__init__(*args, **kwargs)
@@ -142,6 +152,25 @@ class LabelTensor(torch.Tensor):
 			point.x = (point.x + 0.5) * (self.x_scale-1)
 			point.y = (point.y + 0.5) * (self.y_scale-1)
 		self.recursive_extractor(self.meta_tensor)
+
+	def recursive_meta_pull(self, current, outp, index):
+		if not isinstance(current, list):
+			outp[index] = current.pull()
+		else:
+			if not isinstance(current[0], list):
+				last = True
+			else:
+				last = False
+			for i in range(len(current)):
+				outp.append([])
+				deeper = outp[i]
+				if last:
+					deeper = outp
+				self.recursive_meta_pull(current[i], deeper, i)
+
+	def pull(self):
+		self.init_tensor = []
+		self.recursive_meta_pull(self.meta_tensor, self.init_tensor, 0)
 
 
 class RandomRotation(transforms.RandomRotation):
